@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5283425805212911333}
   - component: {fileID: 4072574474468160992}
   - component: {fileID: 7856970000081575420}
+  - component: {fileID: 1511579013501569008}
   m_Layer: 0
   m_Name: Add Jump
   m_TagString: Jump+
@@ -118,7 +119,7 @@ PolygonCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -139,3 +140,16 @@ PolygonCollider2D:
       - {x: 0, y: -0.25}
       - {x: 0.5, y: 0}
   m_UseDelaunayMesh: 0
+--- !u!114 &1511579013501569008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1447909705266878014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff63946eb70c08b438cd816bd08507ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jumpAdd: {fileID: 1447909705266878014}

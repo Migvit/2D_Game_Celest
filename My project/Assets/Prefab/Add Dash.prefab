@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6001198069769243898}
   - component: {fileID: 1717432953119194225}
   - component: {fileID: 9162968090869930285}
+  - component: {fileID: 3959927308445893377}
   m_Layer: 0
   m_Name: Add Dash
   m_TagString: Dash+
@@ -118,10 +119,23 @@ CapsuleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 1, y: 2}
   m_Direction: 0
+--- !u!114 &3959927308445893377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4138023471887327232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b04616844e9c27f4dafbca78f8d21531, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dashAdd: {fileID: 4138023471887327232}

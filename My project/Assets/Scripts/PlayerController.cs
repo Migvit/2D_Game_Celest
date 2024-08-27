@@ -15,21 +15,18 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public int maxJumps = 1;
     [SerializeField] public float jumpForce = 10f;
     [SerializeField] private bool isGrounded = true;
-    private int jumpCount;
+    [SerializeField] public int jumpCount;
 
     [Header("Dashing")]
     [SerializeField] public float dashSpeed = 20f;
     [SerializeField] public float dashDuration = 0.2f;
-    [SerializeField] private int dashCount;
+    [SerializeField] public int dashCount;
     [SerializeField] public int maxDash = 1;
     [SerializeField] public bool isDashing = false;
     [SerializeField] public bool canDash = true;
     private Vector2 dashDirection;
     private TrailRenderer trailRenderer;
 
-    [Header("Interactables")]
-    [SerializeField] public GameObject jumpPlus;
-    [SerializeField] public GameObject dashPlus;
 
     void Start()
     {
@@ -98,19 +95,7 @@ public class PlayerController : MonoBehaviour
                 jumpCount = maxJumps;
                 dashCount = maxDash;
             }
-
-        // Detecta colisão com o objeto específico para "Mais pulos"
-        if (collision.gameObject.CompareTag("Jump+"))
-        {
-            MoreJump();
-        }
-
-        // Detecta colisão com o objeto específico para "Mais Dashes"
-        if (collision.gameObject.CompareTag("Dash+"))
-        {
-            MoreDash();
-        }
-
+ 
         // Detecta colisão com o objeto específico para "morrer"
         if (collision.gameObject.CompareTag("Hazard"))
             {
@@ -144,19 +129,6 @@ public class PlayerController : MonoBehaviour
             trailRenderer.emitting = false;
             isDashing = false;
         }
-
-        void MoreJump()
-        {
-            jumpCount++;
-            Destroy(jumpPlus);
-        }
-
-        void MoreDash()
-        {
-            dashCount++;
-            canDash = true;
-            Destroy(dashPlus);
-         }
 
     void DieAndRespawn()
         {
