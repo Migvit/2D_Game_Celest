@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
 
@@ -21,36 +22,46 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public float dashDuration = 0.2f;
     [SerializeField] private int dashCount;
     [SerializeField] public int maxDash = 1;
-    private Vector2 dashDirection;
     [SerializeField] public bool isDashing = false;
     [SerializeField] public bool canDash = true;
+    private Vector2 dashDirection;
+    private TrailRenderer trailRenderer;
 
+    [Header("Interactables")]
+    [SerializeField] public GameObject jumpPlus;
+    [SerializeField] public GameObject dashPlus;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         jumpCount = maxJumps;
         dashCount = maxDash;
+        trailRenderer = GetComponent<TrailRenderer>();
     }
 
     void Update()
     {
+        if (isDashing) { return; }
 
         Move();
+
         if (Input.GetButtonDown("Jump"))
         {
             Jump();
         }
-
-        if (Input.GetButtonDown("DashInput") && canDash == true)
+        if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            Dash();
-            if (isDashing == true)
+            dashDirection = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+
+            if (canDash && dashCount > 0)
             {
-                Dashing();
+                trailRenderer.emitting = true;
+                dashCount--;
+                StartCoroutine(Dash());
             }
 
         }
+
 
         void Move()
         {
@@ -77,7 +88,8 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        void OnCollisionEnter2D(Collision2D collision)
+    }
+        void OnCollisionEnter2D (Collision2D collision)
         {
             if (collision.gameObject.CompareTag("Ground"))
             {
@@ -87,8 +99,20 @@ public class PlayerController : MonoBehaviour
                 dashCount = maxDash;
             }
 
-            // Detecta colisão com o objeto específico para "morrer"
-            if (collision.gameObject.CompareTag("Hazard"))
+        // Detecta colisão com o objeto específico para "Mais pulos"
+        if (collision.gameObject.CompareTag("Jump+"))
+        {
+            MoreJump();
+        }
+
+        // Detecta colisão com o objeto específico para "Mais Dashes"
+        if (collision.gameObject.CompareTag("Dash+"))
+        {
+            MoreDash();
+        }
+
+        // Detecta colisão com o objeto específico para "morrer"
+        if (collision.gameObject.CompareTag("Hazard"))
             {
                 DieAndRespawn();
             }
@@ -99,6 +123,7 @@ public class PlayerController : MonoBehaviour
             if (collision.gameObject.CompareTag("Ground"))
             {
                 dashCount = maxDash;
+
             }
         }
 
@@ -110,37 +135,36 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        void Dash()
+        IEnumerator Dash()
         {
-            isDashing = true;
             canDash = false;
-            dashDirection = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-            if (dashDirection == Vector2.zero)
-            {
-                dashDirection = new Vector2(transform.localScale.x, 0);
-            }
-            StartCoroutine (StopDash());   
-        }
-
-        void Dashing()
-        {
+            isDashing = true;
             rb.velocity = dashDirection.normalized * dashSpeed;
-            return;
-        }
-
-        IEnumerator StopDash()
-        {
-            yield return new WaitForSeconds(dashDuration);  
+            yield return new WaitForSeconds(dashDuration);
+            trailRenderer.emitting = false;
             isDashing = false;
         }
 
+        void MoreJump()
+        {
+            jumpCount++;
+            Destroy(jumpPlus);
+        }
 
-        void DieAndRespawn()
+        void MoreDash()
+        {
+            dashCount++;
+            canDash = true;
+            Destroy(dashPlus);
+         }
+
+    void DieAndRespawn()
         {
             // Lógica para "morrer" e respawnar
             Debug.Log("Player collided with hazard and will respawn.");
             FindObjectOfType<RespawnController>().TriggerRespawn();
         }
 
-    }
 }
+
+

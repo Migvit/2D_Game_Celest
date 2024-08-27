@@ -3,6 +3,7 @@ using UnityEngine;
 public class RespawnController : MonoBehaviour
 {
     public Transform spawnPoint;  // Referência ao ponto de spawn
+    public Transform container;
     private GameObject player;  // Referência ao jogador
 
     void Start()
