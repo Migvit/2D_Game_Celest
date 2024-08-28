@@ -6,9 +6,17 @@ using static UnityEditor.PlayerSettings;
 
 public class PlayerController : MonoBehaviour
 {
-
+    #region VARIABLES
     [Header("Movement")]
     [SerializeField] public float moveSpeed = 5f;
+    [SerializeField] public float acceleration = 13f;
+    [SerializeField] public float decceleration = 16f;
+    [SerializeField] public float velPower = 0.96f;
+    [SerializeField] public float accelInAir = 0.5f;
+    [SerializeField] public float deccelInAir = 0.7f;
+    public float lastOnGroundTime;
+    bool doConserveMomentum;
+
     private Rigidbody2D rb;
 
     [Header("Jump")]
@@ -16,6 +24,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public float jumpForce = 10f;
     [SerializeField] private bool isGrounded = true;
     [SerializeField] public int jumpCount;
+    [SerializeField] public float coyoteTime;
+    [SerializeField] public float jumpInputBufferTime;
+    [SerializeField] public float lastJumpedTime;
+    [SerializeField] public float jumpCutMultiplier = 0.5f;
+    [SerializeField] public float fallGravityMultiplier = 0.5f;
+    [SerializeField] public float gravityScale = 1f;
+
 
     [Header("Dashing")]
     [SerializeField] public float dashSpeed = 20f;
@@ -26,7 +41,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public bool canDash = true;
     private Vector2 dashDirection;
     private TrailRenderer trailRenderer;
-
+    #endregion
 
     void Start()
     {
@@ -38,55 +53,127 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+
+        #region TIMERS
+        lastOnGroundTime -= Time.deltaTime;
+        lastJumpedTime -= Time.deltaTime;
+     
+        #endregion
+
         if (isDashing) { return; }
 
-        Move();
+
 
         if (Input.GetButtonDown("Jump"))
         {
             Jump();
-        }
-        if (Input.GetKeyDown(KeyCode.LeftShift))
-        {
-            dashDirection = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 
-            if (canDash && dashCount > 0)
+        }
+
+            if (Input.GetKeyDown(KeyCode.LeftShift))
             {
-                trailRenderer.emitting = true;
-                dashCount--;
-                StartCoroutine(Dash());
+                dashDirection = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+
+                if (canDash && dashCount > 0)
+                {
+                    Debug.Log("dashing");
+                    trailRenderer.emitting = true;
+                    dashCount--;
+                    StartCoroutine(Dash());
+                }
+
             }
 
-        }
+        
 
+    }
 
-        void Move()
+    private void FixedUpdate()
+    {
+        Move();
+    }
+
+    void Move()
         {
-            float moveInput = Input.GetAxis("Horizontal");
-            rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
+        float moveInput = Input.GetAxis("Horizontal");
+        float targetSpeed = moveInput * moveSpeed;
+      
+        #region Calculate AccelRate
+        float accelRate;
+
+            //Gets an acceleration value based on if we are accelerating (includes turning) 
+            //or trying to decelerate (stop). As well as applying a multiplier if we're air borne.
+            if (lastOnGroundTime > 0)
+                accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? acceleration : decceleration;
+            else
+                accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? acceleration * accelInAir : decceleration * deccelInAir;
+        #endregion
+       
+        #region Conserve Momentum
+        //We won't slow the player down if they are moving in their desired direction but at a greater speed than their maxSpeed
+        if (doConserveMomentum && Mathf.Abs(rb.velocity.x) > Mathf.Abs(targetSpeed) && Mathf.Sign(rb.velocity.x) == Mathf.Sign(targetSpeed) && Mathf.Abs(targetSpeed) > 0.01f && lastOnGroundTime < 0)
+        {
+            //Prevent any deceleration from happening, or in other words conserve are current momentum
+            //You could experiment with allowing for the player to slightly increae their speed whilst in this "state"
+            accelRate = 0;
         }
+        #endregion
+
+
+        float speedDif = targetSpeed - rb.velocity.x;
+
+        float movement = speedDif * accelRate;
+
+        //Convert this to a vector and apply to rigidbody
+        rb.AddForce(movement * Vector2.right, ForceMode2D.Force);
+    }
 
         void Jump()
         {
-            if (Input.GetButtonDown("Jump") && jumpCount > 0)
+            if (Input.GetButtonDown("Jump") && jumpCount > 0 && lastJumpedTime < 0)
             {
-                rb.velocity = new Vector2(rb.velocity.x, 0);
-                rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
-                jumpCount--;
+
+                lastJumpedTime = jumpInputBufferTime;
+            
+
+            float force = jumpForce;
+            if (rb.velocity.y < 0)
+                force -= rb.velocity.y;
+
+             rb.AddForce(Vector2.up * force, ForceMode2D.Impulse);
+            jumpCount--;
 
 
                 // Notifica o cenário para rotacionar
                 FindObjectOfType<ScenarioRotator>().RotateScene();
             }
 
-            if (isGrounded)
+            if (rb.velocity.y > 0)
+            {
+                rb.AddForce(Vector2.down * rb.velocity.y * (1 - jumpCutMultiplier), ForceMode2D.Impulse);
+            }
+
+
+        if (rb.velocity.y < 0)
+        {
+            rb.gravityScale = gravityScale * fallGravityMultiplier;
+        }
+        else
+        {
+            rb.gravityScale = gravityScale;
+        }
+
+
+
+        if (isGrounded)
             {
                 jumpCount = maxJumps;
             }
         }
+    
 
-    }
-        void OnCollisionEnter2D (Collision2D collision)
+    #region COLLIDER CHECK
+    void OnCollisionEnter2D (Collision2D collision)
         {
             if (collision.gameObject.CompareTag("Ground"))
             {
@@ -94,7 +181,8 @@ public class PlayerController : MonoBehaviour
                 canDash = true;
                 jumpCount = maxJumps;
                 dashCount = maxDash;
-            }
+                lastOnGroundTime = 0.1f;
+        }
  
         // Detecta colisão com o objeto específico para "morrer"
         if (collision.gameObject.CompareTag("Hazard"))
@@ -107,6 +195,7 @@ public class PlayerController : MonoBehaviour
         {
             if (collision.gameObject.CompareTag("Ground"))
             {
+                canDash = true;
                 dashCount = maxDash;
 
             }
@@ -117,16 +206,20 @@ public class PlayerController : MonoBehaviour
             if (collision.gameObject.CompareTag("Ground"))
             {
                 isGrounded = false;
+                lastJumpedTime = coyoteTime;
             }
         }
+    #endregion
 
-        IEnumerator Dash()
+    IEnumerator Dash()
         {
             canDash = false;
             isDashing = true;
+           
             rb.velocity = dashDirection.normalized * dashSpeed;
             yield return new WaitForSeconds(dashDuration);
             trailRenderer.emitting = false;
+           
             isDashing = false;
         }
 
