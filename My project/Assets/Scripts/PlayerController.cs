@@ -88,10 +88,19 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    private void FixedUpdate()
-    {
-        Move();
-    }
+        private void FixedUpdate()
+        {
+            Move();
+
+            if (rb.velocity.y < 0)
+            {
+                rb.gravityScale = gravityScale * fallGravityMultiplier;
+            }
+            else
+            {
+                rb.gravityScale = gravityScale;
+            }
+        }
 
     void Move()
         {
@@ -136,33 +145,18 @@ public class PlayerController : MonoBehaviour
                 lastJumpedTime = jumpInputBufferTime;
             
 
-            float force = jumpForce;
-            if (rb.velocity.y < 0)
+                float force = jumpForce;
+                if (rb.velocity.y < 0)
+            
                 force -= rb.velocity.y;
 
-             rb.AddForce(Vector2.up * force, ForceMode2D.Impulse);
-            jumpCount--;
+                rb.AddForce(Vector2.up * force, ForceMode2D.Impulse);
+                jumpCount--;
 
-
+                
                 // Notifica o cenário para rotacionar
                 FindObjectOfType<ScenarioRotator>().RotateScene();
             }
-
-            if (rb.velocity.y > 0)
-            {
-                rb.AddForce(Vector2.down * rb.velocity.y * (1 - jumpCutMultiplier), ForceMode2D.Impulse);
-            }
-
-
-        if (rb.velocity.y < 0)
-        {
-            rb.gravityScale = gravityScale * fallGravityMultiplier;
-        }
-        else
-        {
-            rb.gravityScale = gravityScale;
-        }
-
 
 
         if (isGrounded)
@@ -173,22 +167,22 @@ public class PlayerController : MonoBehaviour
     
 
     #region COLLIDER CHECK
-    void OnCollisionEnter2D (Collision2D collision)
-        {
-            if (collision.gameObject.CompareTag("Ground"))
+        void OnCollisionEnter2D (Collision2D collision)
             {
-                isGrounded = true;
-                canDash = true;
-                jumpCount = maxJumps;
-                dashCount = maxDash;
-                lastOnGroundTime = 0.1f;
-        }
- 
-        // Detecta colisão com o objeto específico para "morrer"
-        if (collision.gameObject.CompareTag("Hazard"))
-            {
-                DieAndRespawn();
+                if (collision.gameObject.CompareTag("Ground"))
+                {
+                    isGrounded = true;
+                    canDash = true;
+                    jumpCount = maxJumps;
+                    dashCount = maxDash;
+                    lastOnGroundTime = 0.1f;
             }
+ 
+            // Detecta colisão com o objeto específico para "morrer"
+            if (collision.gameObject.CompareTag("Hazard"))
+                {
+                    DieAndRespawn();
+                }
         }
 
         void OnCollisionStay2D(Collision2D collision)
@@ -211,19 +205,20 @@ public class PlayerController : MonoBehaviour
         }
     #endregion
 
-    IEnumerator Dash()
+        IEnumerator Dash()
         {
             canDash = false;
             isDashing = true;
-           
+            float originalGravity = rb.gravityScale;
+            rb.gravityScale = 0f;
             rb.velocity = dashDirection.normalized * dashSpeed;
             yield return new WaitForSeconds(dashDuration);
             trailRenderer.emitting = false;
-           
+            rb.gravityScale = originalGravity;
             isDashing = false;
         }
 
-    void DieAndRespawn()
+        void DieAndRespawn()
         {
             // Lógica para "morrer" e respawnar
             Debug.Log("Player collided with hazard and will respawn.");
