@@ -605,6 +605,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 77e3232a0de26494490d400dc1a1408b, type: 3}
+--- !u!4 &1582316592 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7096147344437142011, guid: 05d7846193d2faa4a8dbbdc5a2d793d2, type: 3}
+  m_PrefabInstance: {fileID: 4868188368337267590}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1590531103 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8175258353713194145, guid: df1fe9870ae6280499dacee548bb6b5b, type: 3}
@@ -1616,7 +1621,7 @@ PrefabInstance:
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 2401632860913985846, guid: adc02509e8b95064b90104f6cdc79650, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1853601802}
+      addedObject: {fileID: 1582316592}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 709746463774631489, guid: adc02509e8b95064b90104f6cdc79650, type: 3}
       insertIndex: -1
@@ -1629,3 +1634,4 @@ SceneRoots:
   - {fileID: 8976523702458060133}
   - {fileID: 547612111}
   - {fileID: 729583581}
+  - {fileID: 6169514340181065445}
