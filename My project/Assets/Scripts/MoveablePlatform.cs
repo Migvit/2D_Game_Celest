@@ -6,6 +6,7 @@ public class MoveablePlatform : MonoBehaviour
     public Transform platform;
     public Transform startPoint;
     public Transform endPoint;
+    private PlayerController playerController;
     private int direction = 1;
     public float speed = 1f;
 
@@ -21,7 +22,7 @@ public class MoveablePlatform : MonoBehaviour
     }
     void Start()
     {
-        
+        playerController = FindObjectOfType<PlayerController>();
     }
 
     // Update is called once per frame
@@ -50,5 +51,20 @@ public class MoveablePlatform : MonoBehaviour
             return endPoint.position;
 
         }
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        
+        
+            collision.transform.SetParent(transform);
+        
+        
+        }
+
+
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        collision.transform.SetParent(null);
     }
 }
