@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static UnityEditor.PlayerSettings;
 
 public class PlayerController : MonoBehaviour
@@ -14,6 +15,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public float velPower = 0.96f;
     [SerializeField] public float accelInAir = 0.5f;
     [SerializeField] public float deccelInAir = 0.7f;
+    [SerializeField] public bool canMove;
     public float lastOnGroundTime;
     bool doConserveMomentum;
 
@@ -43,12 +45,19 @@ public class PlayerController : MonoBehaviour
     private TrailRenderer trailRenderer;
     #endregion
 
+    public float resetSeconds = 1.5f;
+    Material material;
+    float fadeTime = 1f;
+    float deathForce = 0f;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         jumpCount = maxJumps;
         dashCount = maxDash;
         trailRenderer = GetComponent<TrailRenderer>();
+        material = GetComponent<SpriteRenderer>().material;
+        canMove = true;
     }
 
     void Update()
@@ -84,13 +93,23 @@ public class PlayerController : MonoBehaviour
 
             }
 
-        
+        if(Input.GetKeyDown(KeyCode.F))
+            {
+            fadeTime -= Time.deltaTime;
+            material.SetFloat("_Fade", fadeTime);
+            Debug.Log("Player dissolving");
+        }
 
     }
 
         private void FixedUpdate()
         {
+        if (canMove)
+        {
+
             Move();
+
+        }
 
             if (rb.velocity.y < 0)
             {
@@ -104,6 +123,8 @@ public class PlayerController : MonoBehaviour
 
     void Move()
         {
+
+        
         float moveInput = Input.GetAxis("Horizontal");
         float targetSpeed = moveInput * moveSpeed;
       
@@ -220,9 +241,25 @@ public class PlayerController : MonoBehaviour
 
         void DieAndRespawn()
         {
-            // Lógica para "morrer" e respawnar
-            Debug.Log("Player collided with hazard and will respawn.");
-            FindObjectOfType<RespawnController>().TriggerRespawn();
+
+        fadeTime -= Time.deltaTime;
+        material.SetFloat("_Fade", fadeTime);
+        StartCoroutine(Reset());
+        
+
+        // Lógica para "morrer" e respawnar
+        Debug.Log("Player collided with hazard and will respawn.");
+          //  FindObjectOfType<RespawnController>().TriggerRespawn();
+        }
+
+        IEnumerator Reset()
+        {
+        rb.gravityScale = -0.1f;
+        rb.totalForce.Equals(deathForce);
+        canMove = false;
+
+        yield return new WaitForSeconds(resetSeconds);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
 }

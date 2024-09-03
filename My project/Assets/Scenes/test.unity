@@ -326,13 +326,14 @@ GameObject:
   m_Component:
   - component: {fileID: 729583581}
   - component: {fileID: 729583580}
+  - component: {fileID: 729583582}
   m_Layer: 0
   m_Name: Moveable platform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &729583580
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -367,6 +368,52 @@ Transform:
   - {fileID: 660926376}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &729583582
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 729583579}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: -3.7704368}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 4.7482014, y: 0.30354786}
+  m_EdgeRadius: 0
 --- !u!4 &833237411 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1481454718947799416, guid: 77e3232a0de26494490d400dc1a1408b, type: 3}
@@ -1296,6 +1343,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: dustParticles
       objectReference: {fileID: 0}
+    - target: {fileID: 8227871008710738927, guid: 05d7846193d2faa4a8dbbdc5a2d793d2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1488,6 +1539,10 @@ PrefabInstance:
       propertyPath: m_RenderPostProcessing
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1576715655267743073, guid: adc02509e8b95064b90104f6cdc79650, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: eac28dc980b1b5e44b0e5f03014cbc40, type: 2}
     - target: {fileID: 1981135930715104833, guid: adc02509e8b95064b90104f6cdc79650, type: 3}
       propertyPath: container
       value: 
@@ -1569,6 +1624,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1004068450}
     - target: {fileID: 8554566759183872903, guid: adc02509e8b95064b90104f6cdc79650, type: 3}
+      propertyPath: material
+      value: 
+      objectReference: {fileID: 2100000, guid: eac28dc980b1b5e44b0e5f03014cbc40, type: 2}
+    - target: {fileID: 8554566759183872903, guid: adc02509e8b95064b90104f6cdc79650, type: 3}
       propertyPath: dashCount
       value: 1
       objectReference: {fileID: 0}
@@ -1602,6 +1661,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8554566759183872903, guid: adc02509e8b95064b90104f6cdc79650, type: 3}
       propertyPath: gravityScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8554566759183872903, guid: adc02509e8b95064b90104f6cdc79650, type: 3}
+      propertyPath: resetSeconds
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8554566759183872903, guid: adc02509e8b95064b90104f6cdc79650, type: 3}
