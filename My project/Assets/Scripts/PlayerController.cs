@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using static UnityEditor.PlayerSettings;
 
+
+
 public class PlayerController : MonoBehaviour
 {
     #region VARIABLES
@@ -16,8 +18,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public float accelInAir = 0.5f;
     [SerializeField] public float deccelInAir = 0.7f;
     [SerializeField] public bool canMove;
+    private float movement;
     public float lastOnGroundTime;
     bool doConserveMomentum;
+    public ParticleSystem dust;
+    public float dustSeconds = 0.5f;
+    private bool isFacingRight = true;
 
     private Rigidbody2D rb;
 
@@ -46,7 +52,7 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     public float resetSeconds = 1.5f;
-    Material material;
+    SpriteRenderer rend;
     float fadeTime = 1f;
     float deathForce = 0f;
 
@@ -56,8 +62,10 @@ public class PlayerController : MonoBehaviour
         jumpCount = maxJumps;
         dashCount = maxDash;
         trailRenderer = GetComponent<TrailRenderer>();
-        material = GetComponent<SpriteRenderer>().material;
+        rend = GetComponent<SpriteRenderer>();
         canMove = true;
+  
+
     }
 
     void Update()
@@ -92,12 +100,10 @@ public class PlayerController : MonoBehaviour
                 }
 
             }
+        if (Input.GetAxis("Horizontal") > 0f && isGrounded || Input.GetAxis("Horizontal") < 0f && isGrounded)
+        {
+            dust.Play();
 
-        if(Input.GetKeyDown(KeyCode.F))
-            {
-            fadeTime -= Time.deltaTime;
-            material.SetFloat("_Fade", fadeTime);
-            Debug.Log("Player dissolving");
         }
 
     }
@@ -152,17 +158,24 @@ public class PlayerController : MonoBehaviour
 
         float speedDif = targetSpeed - rb.velocity.x;
 
-        float movement = speedDif * accelRate;
+        movement = speedDif * accelRate;
 
         //Convert this to a vector and apply to rigidbody
         rb.AddForce(movement * Vector2.right, ForceMode2D.Force);
+
+
+
+
     }
+
+   
 
         void Jump()
         {
             if (Input.GetButtonDown("Jump") && jumpCount > 0 && lastJumpedTime < 0)
             {
 
+                dust.Play();
                 lastJumpedTime = jumpInputBufferTime;
             
 
@@ -242,8 +255,7 @@ public class PlayerController : MonoBehaviour
         void DieAndRespawn()
         {
 
-        fadeTime -= Time.deltaTime;
-        material.SetFloat("_Fade", fadeTime);
+        
         StartCoroutine(Reset());
         
 
@@ -254,6 +266,8 @@ public class PlayerController : MonoBehaviour
 
         IEnumerator Reset()
         {
+        fadeTime -= Time.deltaTime;
+        rend.material.SetFloat("_Fade", fadeTime);
         rb.gravityScale = -0.1f;
         rb.totalForce.Equals(deathForce);
         canMove = false;
