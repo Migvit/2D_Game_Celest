@@ -125,6 +125,12 @@ public class PlayerController : MonoBehaviour
             {
                 rb.gravityScale = gravityScale;
             }
+
+
+        if (isDashing)
+        {
+            rb.gravityScale = 0f;
+        }
         }
 
     void Move()
@@ -243,12 +249,9 @@ public class PlayerController : MonoBehaviour
         {
             canDash = false;
             isDashing = true;
-            float originalGravity = rb.gravityScale;
-            rb.gravityScale = 0f;
             rb.velocity = dashDirection.normalized * dashSpeed;
             yield return new WaitForSeconds(dashDuration);
             trailRenderer.emitting = false;
-            rb.gravityScale = originalGravity;
             isDashing = false;
         }
 
