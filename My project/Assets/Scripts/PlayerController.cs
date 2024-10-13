@@ -117,7 +117,7 @@ public class PlayerController : MonoBehaviour
 
         }
 
-            if (rb.velocity.y < 0)
+            if (rb.linearVelocity.y < 0)
             {
                 rb.gravityScale = gravityScale * fallGravityMultiplier;
             }
@@ -153,7 +153,7 @@ public class PlayerController : MonoBehaviour
        
         #region Conserve Momentum
         //We won't slow the player down if they are moving in their desired direction but at a greater speed than their maxSpeed
-        if (doConserveMomentum && Mathf.Abs(rb.velocity.x) > Mathf.Abs(targetSpeed) && Mathf.Sign(rb.velocity.x) == Mathf.Sign(targetSpeed) && Mathf.Abs(targetSpeed) > 0.01f && lastOnGroundTime < 0)
+        if (doConserveMomentum && Mathf.Abs(rb.linearVelocity.x) > Mathf.Abs(targetSpeed) && Mathf.Sign(rb.linearVelocity.x) == Mathf.Sign(targetSpeed) && Mathf.Abs(targetSpeed) > 0.01f && lastOnGroundTime < 0)
         {
             //Prevent any deceleration from happening, or in other words conserve are current momentum
             //You could experiment with allowing for the player to slightly increae their speed whilst in this "state"
@@ -162,7 +162,7 @@ public class PlayerController : MonoBehaviour
         #endregion
 
 
-        float speedDif = targetSpeed - rb.velocity.x;
+        float speedDif = targetSpeed - rb.linearVelocity.x;
 
         movement = speedDif * accelRate;
 
@@ -186,15 +186,15 @@ public class PlayerController : MonoBehaviour
             
 
                 float force = jumpForce;
-                if (rb.velocity.y < 0)
+                if (rb.linearVelocity.y < 0)
             
-                force -= rb.velocity.y;
+                force -= rb.linearVelocity.y;
 
                 rb.AddForce(Vector2.up * force, ForceMode2D.Impulse);
                 jumpCount--;
 
                 
-                // Notifica o cenário para rotacionar
+                // Notifica o cenï¿½rio para rotacionar
                 FindObjectOfType<ScenarioRotator>().RotateScene();
             }
 
@@ -218,7 +218,7 @@ public class PlayerController : MonoBehaviour
                     lastOnGroundTime = 0.1f;
             }
  
-            // Detecta colisão com o objeto específico para "morrer"
+            // Detecta colisï¿½o com o objeto especï¿½fico para "morrer"
             if (collision.gameObject.CompareTag("Hazard"))
                 {
                     DieAndRespawn();
@@ -249,7 +249,7 @@ public class PlayerController : MonoBehaviour
         {
             canDash = false;
             isDashing = true;
-            rb.velocity = dashDirection.normalized * dashSpeed;
+            rb.linearVelocity = dashDirection.normalized * dashSpeed;
             yield return new WaitForSeconds(dashDuration);
             trailRenderer.emitting = false;
             isDashing = false;
@@ -262,7 +262,7 @@ public class PlayerController : MonoBehaviour
         StartCoroutine(Reset());
         
 
-        // Lógica para "morrer" e respawnar
+        // Lï¿½gica para "morrer" e respawnar
         Debug.Log("Player collided with hazard and will respawn.");
           //  FindObjectOfType<RespawnController>().TriggerRespawn();
         }
